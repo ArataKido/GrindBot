@@ -20,6 +20,7 @@ class BaseRequests():
 		async with aiohttp.ClientSession(DEMO_URL) as session:
 			async with session.get(f'/{region}/emission',  headers=self.headers) as response:
 				print(await response.json())
+				return await response.json()
 
 
 	# Metods for getting information about clans
@@ -65,14 +66,15 @@ class BaseRequests():
 
 
 # loop.run_until_complete(obj.clan_list(region='ru'))
-obj = BaseRequests()
-loop = asyncio.get_event_loop()
-# loop.run_until_complete(obj.clan_list(region='ru' ))
-# loop.run_until_complete(obj.clan_info(region='ru', clan_id='647d6c53-b3d7-4d30-8d08-de874eb1d845' ))
-# loop.run_until_complete(obj.clan_members(region='ru', clan_id='647d6c53-b3d7-4d30-8d08-de874eb1d845' ))
-# loop.run_until_complete(obj.list_of_chars(region='ru' ))
-# loop.run_until_complete(obj.profile(region='ru', character='Test-2' ))
-# loop.run_until_complete(obj.regions ())
-# loop.run_until_complete(obj.emission (region='ru'))
-loop.run_until_complete(obj.auction_lots (region='ru', item='y1q9'))
-loop.run_until_complete(obj.auction_item_history (region='ru', item='y1q9'))
+if __name__ == "__name__":
+	obj = BaseRequests()
+	loop = asyncio.get_event_loop()
+	# loop.run_until_complete(obj.clan_list(region='ru' ))
+	# loop.run_until_complete(obj.clan_info(region='ru', clan_id='647d6c53-b3d7-4d30-8d08-de874eb1d845' ))
+	# loop.run_until_complete(obj.clan_members(region='ru', clan_id='647d6c53-b3d7-4d30-8d08-de874eb1d845' ))
+	# loop.run_until_complete(obj.list_of_chars(region='ru' ))
+	# loop.run_until_complete(obj.profile(region='ru', character='Test-2' ))
+	# loop.run_until_complete(obj.regions ())
+	# loop.run_until_complete(obj.emission (region='ru'))
+	loop.run_until_complete(obj.auction_lots (region='ru', item='y1q9'))
+	loop.run_until_complete(obj.auction_item_history (region='ru', item='y1q9'))
