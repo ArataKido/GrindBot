@@ -15,8 +15,6 @@ class Menu(BaseRequests):
 
 #TODO data is being retrieved in json format which is not rly readable for users.
 #Need to find better way to provide data.
-
-
 	menu_options = "1:Clans\n2:Users\
 					\n3:Emission\n4:Region\
 					\n5:Auction\n6:Quit\n>> "
@@ -27,11 +25,6 @@ class Menu(BaseRequests):
 		\n3:Back to menu\n>> "
 	profile_options = "1:List of Characters\n2:Characters Profile\
 	\n3:Back to menu\n>> "
-
-	def create_loop(self, method ):
-		loop = asyncio.get_running_loop()
-		loop.run_in_executor(None, method)
-		return loop
 
 	async def clans(self):
 		user_input = input(f"Please select one of the options\n{self.clan_options}")
