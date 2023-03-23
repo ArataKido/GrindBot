@@ -7,6 +7,7 @@ class BaseRequests():
 	#TODO refactor whole class and use one session for all methods
 	# instead of making new session in each method
 	session = None
+	clan_id='647d6c53-b3d7-4d30-8d08-de874eb1d845'
 	headers = 	{
 		'Authorization': f'Bearer {USER_TOKEN}'
 		}
@@ -24,12 +25,12 @@ class BaseRequests():
 
 
 	# Metods for getting information about clans
-	async def clan_info(self, region, clan_id):
+	async def clan_info(self, clan_id=clan_id, region='ru', ):
 		async with aiohttp.ClientSession(DEMO_URL) as session:
 			async with session.get(f'/{region}/clan/{clan_id}/info', headers=self.headers) as response:
 				print(await response.json(), end='\n\n')
 
-	async def clan_list(self, region):
+	async def clan_list(self, region='ru'):
 		async with aiohttp.ClientSession(DEMO_URL) as session:
 			async with session.get(f'/{region}/clans/', headers=self.headers) as response:
 				print(await response.json(),end='\n\n')
