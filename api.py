@@ -3,8 +3,8 @@ import asyncio
 import os
 import json
 
-from parce import get_file_links
-from config import DEMO_URL, PROD_URL, APP_TOKEN, USER_TOKEN
+from utils.parce import get_file_links
+from utils.config import DEMO_URL, PROD_URL, APP_TOKEN, USER_TOKEN
 
 
 class BaseRequests():
@@ -19,9 +19,9 @@ class BaseRequests():
 	item = 'y1q9'
 
 	def __init__(self):
-		if not os.path.exists('db.json'):
+		if not os.path.exists('utils/db.json'):
 			get_file_links()
-		with open('db.json', 'r', encoding='utf-8') as db:
+		with open('utils/db.json', 'r', encoding='utf-8') as db:
 			self.db = json.load(db)
 
 		self.session = aiohttp.ClientSession(PROD_URL)
