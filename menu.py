@@ -147,7 +147,6 @@ class Menu:
 
 				await self.serializer.character_profile_serializer(character=character)
 			case '3':
-
 				await self.menu()
 			case _:
 
