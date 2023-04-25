@@ -1,5 +1,9 @@
 import aiohttp
 import asyncio
+import os
+import json
+
+from parce import get_file_links
 from config import DEMO_URL, PROD_URL, APP_TOKEN, USER_TOKEN
 
 
@@ -13,6 +17,13 @@ class BaseRequests():
 	clan_id = '647d6c53-b3d7-4d30-8d08-de874eb1d845'
 	character = ''
 	item = 'y1q9'
+
+	def __init__(self):
+		if not os.path.exists('db.json'):
+			get_file_links()
+		with open('db.json', 'r', encoding='utf-8') as db:
+			self.db = json.load(db)
+
 
 	async def regions(self):
 		async with aiohttp.ClientSession(PROD_URL) as session:
@@ -46,7 +57,6 @@ class BaseRequests():
 	# Metods for getting information about Users characters
 
 	async def profile(self, region=region, character=character):
-		#TODO For some reason this method does work, need to check it with abvadabra
 		async with aiohttp.ClientSession(PROD_URL) as session:
 			async with session.get(f'/{region}/character/by-name/{character}/profile', headers=self.headers) as response:
 				return await response.json()
@@ -59,16 +69,22 @@ class BaseRequests():
 	# Metods for getting information about auction
 	async def auction_item_history(self, region=region, item=item):
 		async with aiohttp.ClientSession(PROD_URL) as session:
-			async with session.get(f'/{region}/auction/{item}/history', headers=self.headers) as response:
-				if response.status == 400:
-					return False
-				print(f'{await response.json()} THIS WAS API')
-				return await response.json()
+			try:
+				item_id =  self.db[item]
+				async with session.get(f'/{region}/auction/{item_id}/history', headers=self.headers) as response:
+					if response.status == 400:
+						return False
+					return await response.json()
+			except KeyError:
+				return False
 
 	async def auction_lots(self, region=region, item=item):
 		async with aiohttp.ClientSession(PROD_URL) as session:
-			async with session.get(f'/{region}/auction/{item}/lots', headers=self.headers) as response:
-				if response.status == 400:
-					return False
-				print(f'{await response.json()} THIS WAS API')
-				return await response.json()
+			try:
+				item_id =  self.db[item]
+				async with session.get(f'/{region}/auction/{item_id}/lots', headers=self.headers) as response:
+					if response.status == 400:
+						return False
+					return await response.json()
+			except KeyError:
+				return False

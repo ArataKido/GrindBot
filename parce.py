@@ -20,7 +20,7 @@ def read_files(path):
 				file = json.load(file)
 				item_id = file.get('id')
 				item_name = file['name']['lines'].get('en').lower()
-				to_save[item_id] = item_name
+				to_save[item_name] = item_id
 		json.dump(to_save, db)
 		db.close()
 

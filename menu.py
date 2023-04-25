@@ -1,12 +1,10 @@
-import concurrent.futures
-import aiohttp
 import asyncio
 import sys
 import os
+import json
 
 from api import BaseRequests
 from datetime import datetime
-from parce import get_file_links
 
 
 class Serializers():
@@ -28,20 +26,15 @@ class Serializers():
 		print('=========================================')
 
 	async def active_lots_serializers(self, lots:dict):
-		try:
-			print(len(lots['lots']))
-			if len(lots['lots']) != 0 :
-				for lot in lots['lots']:
-					print(f"Item: {lot['itemId']}\nBet price: {lot.get('startPrice')}\nBuyout : {lot.get('buyoutPrice')}")
-				return True
-			print("There is no such item on auction!")
-		except KeyError:
-			#TODO REMOVE THIS PRINT, DONT LET NICLAS SEE THIS.
-			return print('Иди нахуй')
+		if len(lots['lots']) != 0 :
+			for lot in lots['lots']:
+				print(f"Item: {lot['itemId']}\nBet price: {lot.get('startPrice')}\nBuyout : {lot.get('buyoutPrice')}")
+			return True
+		print("There is no such item on auction!")
+		#TODO REMOVE THIS PRINT, DONT LET NICLAS SEE THIS.
 
-class Menu(BaseRequests, Serializers):
+class Menu:
 #TODO Do i rly need a class??
-
 
 #TODO data is being retrieved in json format which is not rly readable for users.
 #Need to find better way to provide data.
@@ -55,26 +48,28 @@ class Menu(BaseRequests, Serializers):
 		\n3:Back to menu\n>> "
 	profile_options = "1:List of Characters\n2:Characters Profile\
 	\n3:Back to menu\n>> "
+	serializer = Serializers()
+	request = BaseRequests()
 
 	async def clans(self):
 		user_input = input(f"\nPlease select one of the options\n{self.clan_options}")
 
 		match user_input:
 			case '1':
-				clans =  await self.clan_list()
+				clans =  await self.request.clan_list()
 				if not clans:
 					return print("Something went wrong")
-				await self.clan_list_serializer(clans=clans)
+				await self.serializer.clan_list_serializer(clans=clans)
 			case '2':
 				clan_id = input('Please provide clans id to get information about its members \n>> ')
 				if not clan_id:
 					return print('ACHTUNG!!! YOUR MESSAGE IS EMPTY!')
-				members = await self.clan_members(region='ru', clan_id=clan_id)
+				members = await self.request.clan_members(region='ru', clan_id=clan_id)
 			case '3':
 				clan_id = input('Please write clans id which you want to look up\n>> ')
 				if not clan_id:
 					return print('ACHTUNG!!! YOUR MESSAGE IS EMPTY!')
-				clan = await self.clan_info(region='ru', clan_id=clan_id)
+				clan = await self.request.clan_info(region='ru', clan_id=clan_id)
 			case '4':
 				await self.menu()
 			case _:
@@ -88,13 +83,13 @@ class Menu(BaseRequests, Serializers):
 				item = input('Please enter the name of a item you are searching for \n>> ')
 				if not item:
 					return print('ACHTUNG!!! YOUR MESSAGE IS EMPTY!')
-				lots = await self.auction_lots(item=item)
+				lots = await self.request.auction_lots(item=item)
 				if not lots:
 					return print('Item was not found')
-				await self.active_lots_serializers(lots=lots)
+				await self.serializer.active_lots_serializers(lots=lots)
 			case '2':
-				user_input = input('Please enter the name of a item you are searching for \n>> ')
-				history = await self.auction_item_history()
+				item  = input('Please enter the name of a item you are searching for \n>> ')
+				history = await self.request.auction_item_history(item=item)
 				if not history:
 					return print('Item was not found')
 				print(history)
@@ -108,11 +103,11 @@ class Menu(BaseRequests, Serializers):
 		user_input = input(f"\nPlease select one of the options\n{self.profile_options}")
 		match user_input:
 			case '1':
-				chars = await self.list_of_chars()
+				chars = await self.request.list_of_chars()
 				print(chars)
 			case '2':
 				user_input = input('Please write characters name\n>> ')
-				profile = await self.profile(character=user_input)
+				profile = await self.request.profile(character=user_input)
 				print(profile)
 			case '3':
 				await self.menu()
@@ -121,7 +116,7 @@ class Menu(BaseRequests, Serializers):
 				await self.profiles()
 
 	async def last_emission(self, region='ru' ):
-		emission = await (self.emission(region=region))
+		emission = await (self.request.emission(region=region))
 		emission = emission['previousStart']
 		emission = datetime.fromisoformat(emission.replace('Z', '+00:00'))
 		emission = emission.strftime("%H:%M:%S")
@@ -130,8 +125,6 @@ class Menu(BaseRequests, Serializers):
 
 	async def menu(self):
 		#TODO Check if session is being closed
-		if not os.path.exists('db.json'):
-			get_file_links()
 		print('\nWelcome to StalcBot!')
 		user_input = input(f'Please select one of the following options.\n{self.menu_options}')
 		while True:
