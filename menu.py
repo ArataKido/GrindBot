@@ -6,6 +6,7 @@ import os
 
 from api import BaseRequests
 from datetime import datetime
+from parce import get_file_links
 
 
 class Serializers():
@@ -36,7 +37,7 @@ class Serializers():
 			print("There is no such item on auction!")
 		except KeyError:
 			#TODO REMOVE THIS PRINT, DONT LET NICLAS SEE THIS.
-			return print('Иди нахуй а, научись писать нормально')
+			return print('Иди нахуй')
 
 class Menu(BaseRequests, Serializers):
 #TODO Do i rly need a class??
@@ -129,6 +130,8 @@ class Menu(BaseRequests, Serializers):
 
 	async def menu(self):
 		#TODO Check if session is being closed
+		if not os.path.exists('db.json'):
+			get_file_links()
 		print('\nWelcome to StalcBot!')
 		user_input = input(f'Please select one of the following options.\n{self.menu_options}')
 		while True:
