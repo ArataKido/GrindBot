@@ -1,7 +1,6 @@
 import asyncio
 import sys
-import os
-import json
+
 
 from api import BaseRequests
 from datetime import datetime
@@ -10,54 +9,14 @@ from tabulate import tabulate
 
 class Serializers():
 #TODO Find better name for this class. Lol
+#TODO Do i even need it now? anyways ill keep it for now idk why
 	"""Purpose of this class is to proses json which is
 		returned by api and print required information to user in most
 		readable way
 
 	"""
-
 	async def serialize(self, column_names, data):
 		print(tabulate(data, headers=column_names, tablefmt="grid", showindex="always"))
-
-
-	# async def clan_list_serializer(self, clans:dict):
-	# 	#TODO need to validate len of clans data
-	# 	column_names= ['Tag', 'Name', 'Members', 'Faction', 'Leader', 'ID']
-	# 	data = []
-	# 	for clan in clans['data']:
-	# 		clan_info = [clan['tag'], clan['name'], clan['memberCount'],
-	# 	clan['alliance'], clan['leader'],clan['id']]
-	# 		data.append(clan_info)
-
-	# async def clan_info_serializer(self, clan:dict):
-	# 	column_names= ['Tag', 'Name', 'Members', 'Level', 'Faction', 'Leader', 'ID']
-	# 	data = [[clan['tag'], clan['name'], clan['memberCount'], clan['level'],
-	# 				clan['alliance'], clan['leader'],clan['id']]]
-	# 	print(tabulate(data, headers=column_names, tablefmt="grid", showindex="always"))
-
-
-	# async def character_profile_serializer(self, character):
-	# 	column_names= ['Username', 'Alliance', 'Status', "Last Login" ]
-	# 	data = [[character['username'], character['alliance'], character['status'], character['lastLogin']]]
-	# 	print(tabulate(data, headers=column_names, tablefmt="grid", showindex="always"))
-
-	# async def active_lots_serializer(self, lots:dict):
-	# 	column_names = ['ItemId', 'Start Price','Bet Price', 'Buyout']
-	# 	data = []
-	# 	if len(lots['lots']) != 0 :
-	# 		for lot in lots['lots']:
-	# 			lot_info = [lot['itemId'], lot.get('startPrice'), lot.get('currentPrice'), lot.get('buyoutPrice')]
-	# 			data.append(lot_info)
-	# 		print(tabulate(data, headers=column_names, tablefmt="grid", showindex="always"))
-	# 	else:
-	# 		print("There is no such item on auction!")
-
-	# async def history_lots_serializer(self, lots:dict):
-	# 	if len(lots['lots']) != 0 :
-	# 		for lot in lots['lots']:
-	# 			print(f"Item: {lot['itemId']}\nBet price: {lot.get('startPrice')}\nBuyout : {lot.get('buyoutPrice')}")
-	# 		return True
-	# 	print("There is no such item on auction!")
 
 
 
