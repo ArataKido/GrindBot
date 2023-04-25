@@ -15,39 +15,42 @@ class Serializers():
 		readable way
 
 	"""
-	async def clan_list_serializer(self, clans:dict):
-		#TODO need to validate len of clans data
-		column_names= ['Tag', 'Name', 'Members', 'Faction', 'Leader', 'ID']
-		data = []
-		for clan in clans['data']:
-			clan_info = [clan['tag'], clan['name'], clan['memberCount'],
-		clan['alliance'], clan['leader'],clan['id']]
-			data.append(clan_info)
-		print(tabulate(data, headers=column_names, tablefmt="grid", showindex="always"))
 
-	async def clan_info_serializer(self, clan:dict):
-		column_names= ['Tag', 'Name', 'Members', 'Level', 'Faction', 'Leader', 'ID']
-		data = [[clan['tag'], clan['name'], clan['memberCount'], clan['level'],
-		clan['alliance'], clan['leader'],clan['id']]]
+	async def serialize(self, column_names, data):
 		print(tabulate(data, headers=column_names, tablefmt="grid", showindex="always"))
 
 
+	# async def clan_list_serializer(self, clans:dict):
+	# 	#TODO need to validate len of clans data
+	# 	column_names= ['Tag', 'Name', 'Members', 'Faction', 'Leader', 'ID']
+	# 	data = []
+	# 	for clan in clans['data']:
+	# 		clan_info = [clan['tag'], clan['name'], clan['memberCount'],
+	# 	clan['alliance'], clan['leader'],clan['id']]
+	# 		data.append(clan_info)
 
-	async def character_profile_serializer(self, character):
-		column_names= ['Username', 'Alliance', 'Status', "Last Login" ]
-		data = [[character['username'], character['alliance'], character['status'], character['lastLogin']]]
-		print(tabulate(data, headers=column_names, tablefmt="grid", showindex="always"))
+	# async def clan_info_serializer(self, clan:dict):
+	# 	column_names= ['Tag', 'Name', 'Members', 'Level', 'Faction', 'Leader', 'ID']
+	# 	data = [[clan['tag'], clan['name'], clan['memberCount'], clan['level'],
+	# 				clan['alliance'], clan['leader'],clan['id']]]
+	# 	print(tabulate(data, headers=column_names, tablefmt="grid", showindex="always"))
 
-	async def active_lots_serializer(self, lots:dict):
-		column_names = ['ItemId', 'Start Price','Bet Price', 'Buyout']
-		data = []
-		if len(lots['lots']) != 0 :
-			for lot in lots['lots']:
-				lot_info = [lot['itemId'], lot.get('startPrice'), lot.get('currentPrice'), lot.get('buyoutPrice')]
-				data.append(lot_info)
-			print(tabulate(data, headers=column_names, tablefmt="grid", showindex="always"))
-		else:
-			print("There is no such item on auction!")
+
+	# async def character_profile_serializer(self, character):
+	# 	column_names= ['Username', 'Alliance', 'Status', "Last Login" ]
+	# 	data = [[character['username'], character['alliance'], character['status'], character['lastLogin']]]
+	# 	print(tabulate(data, headers=column_names, tablefmt="grid", showindex="always"))
+
+	# async def active_lots_serializer(self, lots:dict):
+	# 	column_names = ['ItemId', 'Start Price','Bet Price', 'Buyout']
+	# 	data = []
+	# 	if len(lots['lots']) != 0 :
+	# 		for lot in lots['lots']:
+	# 			lot_info = [lot['itemId'], lot.get('startPrice'), lot.get('currentPrice'), lot.get('buyoutPrice')]
+	# 			data.append(lot_info)
+	# 		print(tabulate(data, headers=column_names, tablefmt="grid", showindex="always"))
+	# 	else:
+	# 		print("There is no such item on auction!")
 
 	# async def history_lots_serializer(self, lots:dict):
 	# 	if len(lots['lots']) != 0 :
@@ -84,8 +87,13 @@ class Menu:
 
 				if not clans:
 					return print("Something went wrong")
-
-				await self.serializer.clan_list_serializer(clans=clans)
+				column_names= ['Tag', 'Name', 'Members', 'Faction', 'Leader', 'ID']
+				data = []
+				for clan in clans['data']:
+					clan_info = [clan['tag'], clan['name'], clan['memberCount'],
+									clan['alliance'], clan['leader'],clan['id']]
+					data.append(clan_info)
+				await self.serializer.serialize(column_names=column_names, data=data)
 			case '2':
 				print("Still Working On It")
 				# clan_id = input('Please provide clans id to get information about its members \n>> ')
@@ -93,15 +101,16 @@ class Menu:
 				# 	return print('ACHTUNG!!! YOUR MESSAGE IS EMPTY!')
 				# members = await self.request.clan_members(region='ru', clan_id=clan_id)
 			case '3':
-
 				clan_id = input('Please write clans id which you want to look up\n>> ')
-
 				if not clan_id:
 					return print('ACHTUNG!!! YOUR MESSAGE IS EMPTY!')
-
 				clan = await self.request.clan_info(region='ru', clan_id=clan_id)
 
-				await self.serializer.clan_info_serializer(clan=clan)
+				column_names= ['Tag', 'Name', 'Members', 'Level', 'Faction', 'Leader', 'ID']
+				data = [[clan['tag'], clan['name'], clan['memberCount'], clan['level'],
+						clan['alliance'], clan['leader'],clan['id']]]
+				await self.serializer.serialize(column_names=column_names, data=data)
+
 			case '4':
 
 				await self.menu()
@@ -118,9 +127,15 @@ class Menu:
 				if not item:
 					return print('ACHTUNG!!! YOUR MESSAGE IS EMPTY!')
 				lots = await self.request.auction_lots(item=item)
-				if not lots:
-					return print('Item was not found')
-				await self.serializer.active_lots_serializer(lots=lots)
+				column_names = ['ItemId', 'Start Price','Bet Price', 'Buyout']
+				data = []
+				if lots and len(lots['lots']) != 0 :
+					for lot in lots['lots']:
+						lot_info = [lot['itemId'], lot.get('startPrice'), lot.get('currentPrice'), lot.get('buyoutPrice')]
+						data.append(lot_info)
+				else:
+					print("There is no such item on auction!")
+				await self.serializer.serialize(column_names=column_names, data=data)
 			case '2':
 				print('Still Working On It')
 				# item  = input('Please enter the name of a item you are searching for \n>> ')
@@ -138,14 +153,15 @@ class Menu:
 		user_input = input(f"\nPlease select one of the options\n{self.profile_options}")
 		match user_input:
 			case '1':
-
 				chars = await self.request.list_of_chars()
 			case '2':
 
 				user_input = input('Please write characters name\n>> ')
 				character = await self.request.profile(character=user_input)
 
-				await self.serializer.character_profile_serializer(character=character)
+				column_names= ['Username', 'Alliance', 'Status', "Last Login" ]
+				data = [[character['username'], character['alliance'], character['status'], character['lastLogin']]]
+				await self.serializer.serialize(column_names=column_names, data=data)
 			case '3':
 				await self.menu()
 			case _:
