@@ -92,9 +92,9 @@ class Menu:
 					for lot in lots['lots']:
 						lot_info = [lot['itemId'], lot.get('startPrice'), lot.get('currentPrice'), lot.get('buyoutPrice')]
 						data.append(lot_info)
+					await self.serializer.serialize(column_names=column_names, data=data)
 				else:
 					print("There is no such item on auction!")
-				await self.serializer.serialize(column_names=column_names, data=data)
 			case '2':
 				print('Still Working On It')
 				# item  = input('Please enter the name of a item you are searching for \n>> ')
