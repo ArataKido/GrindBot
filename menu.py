@@ -2,12 +2,12 @@ import asyncio
 import sys
 
 
-from api import BaseRequests
+from api import BaseRequest
 from datetime import datetime
 from tabulate import tabulate
 
 
-class Serializers():
+class Serializer:
 #TODO Find better name for this class. Lol
 #TODO Do i even need it now? anyways ill keep it for now idk why
 	"""Purpose of this class is to proses json which is
@@ -33,8 +33,8 @@ class Menu:
 		\n3:Back to menu\n>> "
 	profile_options = "1:List of Characters\n2:Characters Profile\
 	\n3:Back to menu\n>> "
-	serializer = Serializers()
-	request = BaseRequests()
+	serializer = Serializer()
+	request = BaseRequest()
 
 
 	async def send_request(self, request):

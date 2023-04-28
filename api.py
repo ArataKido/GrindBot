@@ -3,43 +3,43 @@ import asyncio
 import os
 import json
 
-from parce import get_file_links
+from dotenv import dotenv_values
+from parcer import get_file_links
 
 
-class BaseRequests():
-	#TODO refactor whole class and use one session for all methods
-	# instead of making new session in each method
-
-
+class SetUp:
 	def __init__(self):
-		if not os.path.exists('utils/db.json'):
-			get_file_links()
-		with open('db.json', 'r', encoding='utf-8') as db:
-			self.db = json.load(db)
-
-		self.session = aiohttp.ClientSession(PROD_URL)
-		headers = {
-			'Authorization': f'Bearer {APP_TOKEN}'
+		config = dotenv_values('.env')
+		self.PROD_URL = config['PROD_URL']
+		self.APP_TOKEN = config['APP_TOKEN']
+		self.session = aiohttp.ClientSession(self.PROD_URL)
+		self.db = self.get_db()
+		self.headers = {
+			'Authorization': f'Bearer {self.APP_TOKEN}'
 			}
 
+	def get_db(self):
+		if not os.path.exists('db.json'):
+			get_file_links()
+		with open('db.json', 'r', encoding='utf-8') as db:
+			return json.load(db)
 
+class BaseRequest(SetUp):
 	async def regions(self):
-		async with aiohttp.ClientSession(PROD_URL) as session:
-			async with session.get('/regions') as response:
-				return await response.json()
+		async with self.session.get('/regions') as response:
+			return await response.json()
 
-	async def emission(self,):
+	async def emission(self):
 		async with self.session.get(f'emission',  headers=self.headers) as response:
 			return await response.json()
 
-
 	# Metods for getting information about clans
-	async def clan_info(self, clan_id,):
+	async def clan_info(self, clan_id):
 		async with self.session.get(f'clan/{clan_id}/info', headers=self.headers) as response:
 				return await response.json()
 
-	async def clan_list(self,):
-			async with self.session.get(f'clans/', headers=self.headers) as response:
+	async def clan_list(self):
+			async with self.session.get(f'clans', headers=self.headers) as response:
 				return await response.json()
 
 	async def clan_members(self, clan_id):
@@ -49,7 +49,6 @@ class BaseRequests():
 				return response.json()
 
 	# Metods for getting information about Users characters
-
 	async def profile(self, character):
 		async with self.session.get(f'character/by-name/{character}/profile', headers=self.headers) as response:
 				return await response.json()
