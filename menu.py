@@ -36,6 +36,19 @@ class Menu:
 	serializer = Serializers()
 	request = BaseRequests()
 
+
+	async def send_request(self, request):
+		reader, writer = await asyncio.open_connection(self.host, self.port)
+
+		# Send the request to the server
+		writer.write(request.encode())
+		await writer.drain()
+
+		# Read the response from the server
+		response = await reader.read()
+		return response.decode()
+
+
 	async def clans(self):
 		user_input = input(f"\nPlease select one of the options\n{self.clan_options}")
 
