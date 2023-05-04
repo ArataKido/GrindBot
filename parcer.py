@@ -14,7 +14,7 @@ def get_file_links():
 
 def read_files(path):
 	to_save =  {}
-	with open('utils/db.json', 'w', encoding='utf-8') as db:
+	with open('db.json', 'w', encoding='utf-8') as db:
 		for file in path:
 			with open(file, 'r', encoding='utf-8') as file:
 				file = json.load(file)
